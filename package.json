@@ -1,0 +1,19 @@
+{
+  "name": "telegrambot-secretsanta",
+  "version": "1.0.0",
+  "description": "Secret Santa Telegram bot using Telegraf framework and Firebase Cloud Functions on Spark plan",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/herschelh/telegrambot-secretsanta.git"
+  },
+  "author": "herschelh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/herschelh/telegrambot-secretsanta/issues"
+  },
+  "homepage": "https://github.com/herschelh/telegrambot-secretsanta#readme"
+}
