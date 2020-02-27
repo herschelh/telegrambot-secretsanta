@@ -2,17 +2,20 @@
 Secret Santa Telegram bot using Telegraf framework and Firebase Cloud Functions on Spark plan
 
 ## Bot functions
-`/help` - shows a list of commands
-`/new` - create new event
-`/details` - view details of an event created by the user who initiated this command
-`/participants` - view participants of an event
-`/date` - set the date for an event
-`/name` - get the user's drawn name for an event
-`/join` - join an event
-`/leave` - leave an event
-`/delete` - delete an event that you have created
-`/draw` - draw names for an event
-`/cancel` - cancel active command
+- `/help` - shows a list of commands
+- `/new` - create new event
+- `/details` - view details of an event created by the user who initiated this command
+- `/participants` - view participants of an event
+- `/date` - set the date for an event
+- `/name` - get the user's drawn name for an event
+- `/join` - join an event
+- `/leave` - leave an event
+- `/delete` - delete an event that you have created
+- `/draw` - draw names for an event
+- `/cancel` - cancel active command
+
+### Bot Usage
+1. 
 
 ## Notes
 This bot was developed around the limitation from a Spark (free) plan without billing account configured
