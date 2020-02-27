@@ -164,7 +164,7 @@ const replyMap = {
         reply, editMessageText, updateType, session: { event: { name } } = { event: {} }, msg
     }) => (updateType === 'message' ? reply : editMessageText)(
         (msg || `Successfully drew names for event *${name}*`) +
-        `, [PM me](tg://user?id=${botId}) for your drawn name!`,
+        `, ${genBotTag()} for your drawn name!`,
         Extra.markdown().markup(updateType === 'message' 
             ? {} 
             : { reply_markup: JSON.stringify({ remove_keyboard: true }) }
@@ -173,7 +173,7 @@ const replyMap = {
     nameGroup: (
         { reply, editMessageText, updateType, chat: { type } }
     ) => (updateType === 'message' ? reply : editMessageText)(
-        `Let's not ruin the surprise, [PM me](tg://user?id=${botId}) for your drawn name!`,
+        `Let's not ruin the surprise, ${genBotTag()} for your drawn name!`,
         Extra.markdown().markup(updateType === 'message' 
             ? keyboardService.commands(commandList, type)
             : { reply_markup: JSON.stringify({ remove_keyboard: true }) } 
@@ -205,6 +205,8 @@ const genUserTag = ({ id, first_name, username }) => {
     const link = id ? `tg://user?id=${id}` : `http://t.me/${username}`;
     return `[${names.join(' ')}](${link})`;
 };
+
+const genBotTag = (label) => `[${label || 'PM me'}](tg://user?id=${botId})`;
 
 
 const doSelect = (ctx, snap, type, cfg) => {
@@ -393,7 +395,9 @@ const detailsEvent = exports.detailsEvent = (ctx, message, users) => {
                 ? ':' + users.reduce((str, u, idx) => str + '\n' + (idx + 1) + '. ' + genUserTag(u), '')
                 : ''
             ) + '\n' +
-            (isDrawn ? `Names drawn on *${util.formatReadableDate(drawDate)}*\n` : '') +
+            (isDrawn ? `Names drawn on *${util.formatReadableDate(drawDate)}* ` + 
+                (type === 'group' ? `, ${genBotTag()} for your drawn name!` : '') + '\n' 
+            : '') +
             `Created on *${util.formatReadableDate(createDate)}*` +
             (created ? ` by *${created}*` : ''),
             Extra.markdown().markup(keyboardService.details(commands, event))
@@ -542,7 +546,11 @@ exports.draw = (ctx) => {
     delete session.event;
     session.currentCommand = 'draw';
     const filter = commandList.draw.inlineEvent;
-    type === 'group' ? selectChat(ctx, { filter }) : select(ctx, false, { filter });
+    type === 'group' ? selectChat(ctx, { filter,
+        emptyMsg: 'Unable to find events that were created in this chat for drawing names',
+    }) : select(ctx, true, { filter,
+        emptyMsg: 'Unable to find events, that you\'ve created, for drawing names',
+    });
 };
 
 exports.drawEvent = (ctx, isDoDraw) => {
@@ -592,14 +600,9 @@ exports.drawEvent = (ctx, isDoDraw) => {
             return;
         };
         doDraw();
-        return Promise.all(
-            participants.map((p) => 
-                dataService.setParticipantRecipient({
-                    _id: p._id,
-                    recipient: drawMap[p._id],
-                })
-            )
-        ).then(() => {
+        return Promise.all(participants.map((p) => 
+            dataService.setParticipantRecipient(Object.assign({}, p, { recipient: drawMap[p._id] }))
+        )).then(() => {
             dataService.setEventDrawn(event);
             delete session.currentCommand;
             replyMap.drawEventConfirm(ctx);
